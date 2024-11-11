@@ -1,0 +1,7 @@
+---
+sdsc.osn.xsede.org:
+  access_key: abc123
+  secret_key: def456
+aamu.osn.xsede.org:
+  access_key: ghi789
+  secret_key: jkl012

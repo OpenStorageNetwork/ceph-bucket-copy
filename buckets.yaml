@@ -1,0 +1,7 @@
+---
+bucket01:
+  source: sdsc.osn.xsede.org
+  destination: aamu.osn.xsede.org
+bucket02:
+  source: sdsc.osn.xsede.org
+  destination: aamu.osn.xsede.org
