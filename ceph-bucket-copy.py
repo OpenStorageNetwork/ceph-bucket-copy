@@ -5,7 +5,12 @@ import s3_buckets
 import radosgw_admin
 import sys
 import yaml
-import json
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 # Example usage
 if __name__ == "__main__":
@@ -20,7 +25,9 @@ if __name__ == "__main__":
     for bucket_name, bucket_info in buckets.items():
         source = bucket_info["source"]
         destination = bucket_info["destination"]
-        print(f"Bucket: {bucket_name}, Source: {source}, Destination: {destination}")
+        logging.info(
+            f"Bucket: {bucket_name}, Source: {source}, Destination: {destination}"
+        )
 
         # Get the list of users
         s = radosgw_admin.list_all_users(
@@ -42,16 +49,14 @@ if __name__ == "__main__":
 
         # Check if there are any users that start with the bucket_name
         if len(source_users) == 0:
-            print(f"No users found on {source} starting with {bucket_name}.")
+            logging.warning(f"No users found on {source} starting with {bucket_name}.")
         else:
 
             # Add the source users to the destination
             for source_user in source_users:
-                print(f"User: {source_user}")
-
                 # Check if the user already exists in the destination
                 if source_user in destination_users:
-                    print(f"User {source_user} already exists on {destination}.")
+                    logging.info(f"User {source_user} already exists on {destination}.")
 
                     #
                     # If the user exists, do we want to update the keys or leave them as is?
@@ -79,11 +84,11 @@ if __name__ == "__main__":
                             source_user_credentials["secret_key"],
                             secure=True,
                         )
-                        print(f"User {source_user} created on {destination}.")
+                        logging.info(f"User {source_user} created on {destination}.")
                     else:
-                        print(f"User {source_user} has no credentials on {source}.")
-
-            print()
+                        logging.error(
+                            f"User {source_user} has no credentials on {source}."
+                        )
 
         # Get the list of buckets
         s = radosgw_admin.list_all_buckets(
@@ -100,11 +105,11 @@ if __name__ == "__main__":
         )
 
         if bucket_name not in s:
-            print(f"Bucket {bucket_name} not found on {source}.")
+            logging.warning(f"Bucket {bucket_name} not found on {source}.")
             continue
 
         if bucket_name in d:
-            print(f"Bucket {bucket_name} already exists on {destination}.")
+            logging.warning(f"Bucket {bucket_name} already exists on {destination}.")
 
             #
             # If bucket exists, do we want to update the bucket policy or leave it as is?
@@ -139,8 +144,6 @@ if __name__ == "__main__":
                 source_bucket_policy,
             )
             if policy_result:
-                print(f"Bucket policy set for {bucket_name} on {destination}.")
+                logging.info(f"Bucket policy set for {bucket_name} on {destination}.")
         else:
-            print(f"No bucket policy found for {bucket_name} on {source}.")
-
-        print()
+            logging.warning(f"No bucket policy found for {bucket_name} on {source}.")

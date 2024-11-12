@@ -1,4 +1,5 @@
 from rgwadmin import RGWAdmin
+import logging
 
 
 def list_all_users(host, admin_access_key, admin_secret_key, secure=True):
@@ -28,7 +29,7 @@ def list_all_users(host, admin_access_key, admin_secret_key, secure=True):
         return users
 
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logging.error(f"An error occurred: {e}")
         return []
 
 
@@ -68,11 +69,11 @@ def get_user_credentials(
             }
             return credentials
         else:
-            print("No access keys found for the specified user.")
+            logging.warning("No access keys found for the specified user.")
             return None
 
     except Exception as e:
-        print(f"An error occurred while retrieving user credentials: {e}")
+        logging.error(f"An error occurred while retrieving user credentials: {e}")
         return None
 
 
@@ -121,7 +122,7 @@ def create_user_with_keys(
         return user
 
     except Exception as e:
-        print(f"An error occurred while creating the user: {e}")
+        logging.error(f"An error occurred while creating the user: {e}")
         return None
 
 
@@ -148,5 +149,5 @@ def list_all_buckets(host, access_key, secret_key, secure=True):
         return rgw.get_bucket()
 
     except Exception as e:
-        print(f"An error occurred while listing buckets: {e}")
+        logging.error(f"An error occurred while listing buckets: {e}")
         return []

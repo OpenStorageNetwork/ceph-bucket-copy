@@ -2,7 +2,7 @@
 
 import boto3
 from botocore.exceptions import ClientError
-import json
+import logging
 
 
 def create_bucket(endpoint_url, access_key, secret_key, bucket_name, region=None):
@@ -39,11 +39,11 @@ def create_bucket(endpoint_url, access_key, secret_key, bucket_name, region=None
             # Default region
             s3_client.create_bucket(Bucket=bucket_name)
 
-        print(f"Bucket '{bucket_name}' created successfully.")
+        logging.info(f"Bucket '{bucket_name}' created successfully.")
         return True
 
     except ClientError as e:
-        print(f"An error occurred while creating the bucket: {e}")
+        logging.error(f"An error occurred while creating the bucket: {e}")
         return False
 
 
@@ -76,10 +76,10 @@ def get_bucket_policy(endpoint_url, access_key, secret_key, bucket_name):
 
     except ClientError as e:
         if e.response["Error"]["Code"] == "NoSuchBucketPolicy":
-            print(f"No policy found for bucket '{bucket_name}'.")
+            logging.warning(f"No policy found for bucket '{bucket_name}'.")
             return None
         else:
-            print(f"An error occurred: {e}")
+            logging.error(f"An error occurred: {e}")
             return None
 
 
@@ -111,8 +111,5 @@ def set_bucket_policy(endpoint_url, access_key, secret_key, bucket_name, policy)
         return True
 
     except ClientError as e:
-        print(f"An error occurred: {e}")
-        return False
-    except json.JSONDecodeError as e:
-        print(f"Invalid JSON policy: {e}")
+        logging.error(f"An error occurred: {e}")
         return False
