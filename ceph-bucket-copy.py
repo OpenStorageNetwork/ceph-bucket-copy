@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
                 else:
                     # Get the source user credentials
-                    source_user_credentials = radosgw_admin.get_user_credentials(
+                    source_user_info = radosgw_admin.get_user(
                         source,
                         credentials[source]["access_key"],
                         credentials[source]["secret_key"],
@@ -73,16 +73,13 @@ if __name__ == "__main__":
                         secure=True,
                     )
 
-                    if source_user_credentials:
+                    if source_user_info:
                         # Create the user in the destination
-                        radosgw_admin.create_user_with_keys(
+                        radosgw_admin.create_user(
                             destination,
                             credentials[destination]["access_key"],
                             credentials[destination]["secret_key"],
-                            source_user,
-                            source_user,
-                            source_user_credentials["access_key"],
-                            source_user_credentials["secret_key"],
+                            source_user_info,
                             secure=True,
                         )
                         logging.info(f"User {source_user} created on {destination}.")

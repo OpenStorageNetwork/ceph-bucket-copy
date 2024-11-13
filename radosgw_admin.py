@@ -33,9 +33,7 @@ def list_all_users(host, admin_access_key, admin_secret_key, secure=True):
         return []
 
 
-def get_user_credentials(
-    host, admin_access_key, admin_secret_key, username, secure=True
-):
+def get_user(host, admin_access_key, admin_secret_key, username, secure=True):
     """
     Retrieve the access_key and secret_key for a specific user using the rgwadmin package.
 
@@ -60,33 +58,14 @@ def get_user_credentials(
 
         # Get user information
         user_info = rgw.get_user(username)
-
-        if "keys" in user_info and user_info["keys"]:
-            # Assuming the first key pair is desired
-            credentials = {
-                "access_key": user_info["keys"][0]["access_key"],
-                "secret_key": user_info["keys"][0]["secret_key"],
-            }
-            return credentials
-        else:
-            logging.warning("No access keys found for the specified user.")
-            return None
+        return user_info
 
     except Exception as e:
         logging.error(f"An error occurred while retrieving user credentials: {e}")
         return None
 
 
-def create_user_with_keys(
-    host,
-    admin_access_key,
-    admin_secret_key,
-    username,
-    display_name,
-    access_key,
-    secret_key,
-    secure=True,
-):
+def create_user(host, admin_access_key, admin_secret_key, user_info, secure=True):
     """
     Create a user and set their access_key and secret_key using the rgwadmin package.
 
@@ -94,10 +73,7 @@ def create_user_with_keys(
         host (str): The RGW admin host URL.
         admin_access_key (str): The admin access key for authentication.
         admin_secret_key (str): The admin secret key for authentication.
-        username (str): The username for the new user.
-        display_name (str): The display name for the new user.
-        access_key (str): The desired access key for the new user.
-        secret_key (str): The desired secret key for the new user.
+        user_info (dict): A dictionary containing all user attributes to recreate the user.
         secure (bool): Use HTTPS if True, otherwise HTTP.
 
     Returns:
@@ -114,10 +90,19 @@ def create_user_with_keys(
 
         # Create the user
         user = rgw.create_user(
-            uid=username,
-            display_name=display_name,
-            access_key=access_key,
-            secret_key=secret_key,
+            uid=user_info["user_id"],
+            display_name=user_info["display_name"],
+            access_key=(
+                user_info["keys"][0]["access_key"]
+                if "keys" in user_info and user_info["keys"]
+                else None
+            ),
+            secret_key=(
+                user_info["keys"][0]["secret_key"]
+                if "keys" in user_info and user_info["keys"]
+                else None
+            ),
+            max_buckets=user_info["max_buckets"],
         )
         return user
 
