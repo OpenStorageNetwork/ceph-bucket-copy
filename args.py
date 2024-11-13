@@ -23,4 +23,13 @@ def args(args):
         required=True,
     )
 
+    parser.add_argument(
+        "--config-commands-file",
+        dest="config_commands_file",
+        help="File to write the rclone configuration commands.",
+        type=str,
+        default="config_commands.sh",
+        required=False,
+    )
+
     return parser.parse_args(args)

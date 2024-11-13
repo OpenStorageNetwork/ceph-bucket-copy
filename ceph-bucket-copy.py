@@ -3,6 +3,7 @@
 import args
 import s3_buckets
 import radosgw_admin
+import write_commands
 import sys
 import yaml
 import logging
@@ -147,3 +148,38 @@ if __name__ == "__main__":
                 logging.info(f"Bucket policy set for {bucket_name} on {destination}.")
         else:
             logging.warning(f"No bucket policy found for {bucket_name} on {source}.")
+
+        # Write the rclone configuration command
+        write_commands.write_rclone_config(
+            args.config_commands_file,
+            f"{bucket_name}_source",
+            (
+                source_user_info["keys"][0]["access_key"]
+                if "keys" in source_user_info and source_user_info["keys"]
+                else None
+            ),
+            (
+                source_user_info["keys"][0]["secret_key"]
+                if "keys" in source_user_info and source_user_info["keys"]
+                else None
+            ),
+            f"https://{source}",
+        )
+
+        write_commands.write_rclone_config(
+            args.config_commands_file,
+            f"{bucket_name}_destination",
+            (
+                source_user_info["keys"][0]["access_key"]
+                if "keys" in source_user_info and source_user_info["keys"]
+                else None
+            ),
+            (
+                source_user_info["keys"][0]["secret_key"]
+                if "keys" in source_user_info and source_user_info["keys"]
+                else None
+            ),
+            f"https://{destination}",
+        )
+
+        logging.info(f"Wrote rclone config commands to {args.config_commands_file}.")
