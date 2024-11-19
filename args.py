@@ -32,4 +32,13 @@ def args(args):
         required=False,
     )
 
+    parser.add_argument(
+        "--copy-commands-file",
+        dest="copy_commands_file",
+        help="File to write the rclone copy commands.",
+        type=str,
+        default="copy_commands.sh",
+        required=False,
+    )
+
     return parser.parse_args(args)

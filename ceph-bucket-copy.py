@@ -180,3 +180,12 @@ if __name__ == "__main__":
         )
 
         logging.info(f"Wrote rclone config commands to {args.config_commands_file}.")
+
+        write_commands.write_rclone_copy(
+            args.copy_commands_file,
+            f"{bucket_name}_source",
+            f"{bucket_name}_destination",
+            bucket_name,
+        )
+
+        logging.info(f"Wrote rclone copy commands to {args.copy_commands_file}.")

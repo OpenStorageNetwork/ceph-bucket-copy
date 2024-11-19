@@ -26,3 +26,21 @@ def write_rclone_config(
             file.write(command + "\n")
     except Exception as e:
         logging.error(f"An error occurred: {e}")
+
+
+def write_rclone_copy(file_path, source, destination, bucket):
+    """
+    Appends an rclone configuration command to a file with the specified options.
+
+    :param file_path: Path to the file where the command will be appended.
+    :param source: Name of the source rclone connection.
+    :param destination: Name of the destination rclone connection.
+    :param bucket: Name of the bucket to copy.
+    """
+    command = f"rclone copy {source}:{bucket} {destination}:{bucket} --progress"
+
+    try:
+        with open(file_path, "a") as file:
+            file.write(command + "\n")
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
