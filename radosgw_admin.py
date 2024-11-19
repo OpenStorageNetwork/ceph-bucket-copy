@@ -1,4 +1,5 @@
 from rgwadmin import RGWAdmin
+from urllib.parse import quote
 import logging
 
 
@@ -92,15 +93,21 @@ def create_user(host, admin_access_key, admin_secret_key, user_info, secure=True
         user = rgw.create_user(
             uid=user_info["user_id"],
             display_name=user_info["display_name"],
-            access_key=(
-                user_info["keys"][0]["access_key"]
-                if "keys" in user_info and user_info["keys"]
-                else None
+            access_key=quote(
+                (
+                    user_info["keys"][0]["access_key"]
+                    if "keys" in user_info and user_info["keys"]
+                    else None
+                ),
+                safe="",
             ),
-            secret_key=(
-                user_info["keys"][0]["secret_key"]
-                if "keys" in user_info and user_info["keys"]
-                else None
+            secret_key=quote(
+                (
+                    user_info["keys"][0]["secret_key"]
+                    if "keys" in user_info and user_info["keys"]
+                    else None
+                ),
+                safe="",
             ),
             max_buckets=user_info["max_buckets"],
         )
