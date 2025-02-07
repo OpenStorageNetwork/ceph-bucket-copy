@@ -26,8 +26,15 @@ if __name__ == "__main__":
     for bucket_name, bucket_info in buckets.items():
         source = bucket_info["source"]
         destination = bucket_info["destination"]
+        bucket_owner = radosgw_admin.get_bucket_owner(
+            source,
+            credentials[source]["access_key"],
+            credentials[source]["secret_key"],
+            bucket_name,
+            secure=True,
+        )
         logging.info(
-            f"Bucket: {bucket_name}, Source: {source}, Destination: {destination}"
+            f"Bucket: {bucket_name}, BucketOwner: {bucket_owner}, Source: {source}, Destination: {destination}"
         )
 
         # Get the list of users
@@ -114,12 +121,19 @@ if __name__ == "__main__":
             #
 
             continue
-
-        # Get the source bucket policy
-        source_bucket_policy = s3_buckets.get_bucket_policy(
+	# Get the bucket owner credentials
+        bucket_owner_info = radosgw_admin.get_user(
             source,
             credentials[source]["access_key"],
             credentials[source]["secret_key"],
+            bucket_owner,
+            secure=True,
+	)
+        # Get the source bucket policy
+        source_bucket_policy = s3_buckets.get_bucket_policy(
+            source,
+            bucket_owner_info["keys"][0]["access_key"],
+            bucket_owner_info["keys"][0]["secret_key"],
             bucket_name,
         )
 
