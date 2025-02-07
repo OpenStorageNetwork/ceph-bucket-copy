@@ -143,3 +143,32 @@ def list_all_buckets(host, access_key, secret_key, secure=True):
     except Exception as e:
         logging.error(f"An error occurred while listing buckets: {e}")
         return []
+
+
+def get_bucket_owner(host, access_key, secret_key, bucket_name, secure=True):
+    """
+    Lists the bucket owner of a given bucketin in the Ceph Object Storage using the rgwadmin package.
+
+    Parameters:
+        host (str): The RGW admin host URL.
+        access_key (str): The access key for authentication.
+        secret_key (str): The secret key for authentication.
+        bucket_name (str): The name of the bucket.
+        secure (bool): Use HTTPS if True, otherwise HTTP.
+
+    Returns:
+        str: a username.
+    """
+    try:
+        # Initialize the RGWAdmin client
+        rgw = RGWAdmin(
+            access_key=access_key, secret_key=secret_key, server=host, secure=secure
+        )
+
+        # Fetch the bucket owner
+        bucket_info = rgw.get_bucket(bucket=bucket_name)
+        return bucket_info["owner"]
+
+    except Exception as e:
+        logging.error(f"An error occurred while fetching bucket owner: {e}")
+        return []
